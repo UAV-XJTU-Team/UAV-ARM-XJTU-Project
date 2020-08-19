@@ -1,0 +1,502 @@
+<robot
+  name="pincherarmrobot">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="2.4845E-06 0.013235 0.020936"
+        rpy="0 0 0" />
+      <mass
+        value="4.5754E-05" />
+      <inertia
+        ixx="1.459E-09"
+        ixy="6.8805E-15"
+        ixz="2.1093E-13"
+        iyy="1.4574E-09"
+        iyz="-4.7542E-11"
+        izz="1.5509E-12" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Link_1">
+    <inertial>
+      <origin
+        xyz="0.0011009 0.00044343 -0.020439"
+        rpy="0 0 0" />
+      <mass
+        value="4.9121E-05" />
+      <inertia
+        ixx="3.0214E-09"
+        ixy="-4.9941E-12"
+        ixz="1.9272E-10"
+        iyy="3.0318E-09"
+        iyz="7.7604E-11"
+        izz="1.4413E-11" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_1"
+    type="revolute">
+    <origin
+      xyz="0 0 0.03933"
+      rpy="3.1416 6.123E-17 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link_1" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="Link_2">
+    <inertial>
+      <origin
+        xyz="2.5991E-06 0.04947 -0.019144"
+        rpy="0 0 0" />
+      <mass
+        value="4.7221E-05" />
+      <inertia
+        ixx="9.3859E-09"
+        ixy="-9.2297E-13"
+        ixz="2.3555E-13"
+        iyy="4.3991E-10"
+        iyz="1.2329E-09"
+        izz="8.946E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_2"
+    type="revolute">
+    <origin
+      xyz="0.0145 0.0184 -0.024"
+      rpy="-1.5708 0 -6.123E-17" />
+    <parent
+      link="Link_1" />
+    <child
+      link="Link_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="Link_3">
+    <inertial>
+      <origin
+        xyz="0.04947 2.7835E-06 -0.018221"
+        rpy="0 0 0" />
+      <mass
+        value="4.7221E-05" />
+      <inertia
+        ixx="3.9825E-10"
+        ixy="-4.9304E-13"
+        ixz="9.9939E-10"
+        iyy="9.3451E-09"
+        iyz="5.7166E-14"
+        izz="8.9468E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_3"
+    type="revolute">
+    <origin
+      xyz="0 0.068 -0.03756"
+      rpy="-3.1416 4.9613E-14 1.5708" />
+    <parent
+      link="Link_2" />
+    <child
+      link="Link_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="Link_4">
+    <inertial>
+      <origin
+        xyz="0.041435 -0.011521 -0.018695"
+        rpy="0 0 0" />
+      <mass
+        value="4.8813E-05" />
+      <inertia
+        ixx="1.3477E-09"
+        ixy="2.284E-09"
+        ixz="9.3436E-10"
+        iyy="6.2818E-09"
+        iyz="-2.5967E-10"
+        izz="6.7941E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_4"
+    type="revolute">
+    <origin
+      xyz="0.068 0 -0.00076"
+      rpy="8.4308E-14 6.9389E-16 -4.1243E-27" />
+    <parent
+      link="Link_3" />
+    <child
+      link="Link_4" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="Link_5">
+    <inertial>
+      <origin
+        xyz="2.052E-06 0.00043295 0.029285"
+        rpy="0 0 0" />
+      <mass
+        value="5.0309E-05" />
+      <inertia
+        ixx="7.3909E-09"
+        ixy="-1.5736E-14"
+        ixz="-9.4168E-13"
+        iyy="7.3886E-09"
+        iyz="-1.2815E-10"
+        izz="2.2395E-12" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_5"
+    type="revolute">
+    <origin
+      xyz="0.0639 -0.00024968 -0.019159"
+      rpy="1.5708 4.4704E-08 1.5708" />
+    <parent
+      link="Link_4" />
+    <child
+      link="Link_5" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="Link_6">
+    <inertial>
+      <origin
+        xyz="0.041435 -0.011521 -0.018695"
+        rpy="0 0 0" />
+      <mass
+        value="4.8813E-05" />
+      <inertia
+        ixx="1.3477E-09"
+        ixy="2.284E-09"
+        ixz="9.3436E-10"
+        iyy="6.2818E-09"
+        iyz="-2.5967E-10"
+        izz="6.7941E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_6"
+    type="revolute">
+    <origin
+      xyz="0 0.0184 0.04834"
+      rpy="-1.5708 -1.5708 0" />
+    <parent
+      link="Link_5" />
+    <child
+      link="Link_6" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="Link_7">
+    <inertial>
+      <origin
+        xyz="-0.0018068 -0.00026619 -0.0002393"
+        rpy="0 0 0" />
+      <mass
+        value="7.1779E-06" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_7.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_7.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_7"
+    type="fixed">
+    <origin
+      xyz="0.0639 -0.00024968 -0.01916"
+      rpy="1.5708 3.8975E-09 1.5708" />
+    <parent
+      link="Link_6" />
+    <child
+      link="Link_7" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Link_8">
+    <inertial>
+      <origin
+        xyz="0.0005393 0.00032837 0.0068317"
+        rpy="0 0 0" />
+      <mass
+        value="0.0010012" />
+      <inertia
+        ixx="5.8583E-11"
+        ixy="-2.1362E-13"
+        ixz="-4.559E-12"
+        iyy="5.881E-11"
+        iyz="-2.739E-12"
+        izz="4.8391E-13" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_8.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://UAV-ARM-moveit/model/pincherarmrobot/meshes/Link_8.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint_8"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="-6.2967E-09 1.3654E-25 1.3235E-23" />
+    <parent
+      link="Link_7" />
+    <child
+      link="Link_8" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="100"
+      velocity="1" />
+  </joint>
+</robot>

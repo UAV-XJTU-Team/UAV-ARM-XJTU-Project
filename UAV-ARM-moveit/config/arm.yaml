@@ -1,0 +1,19 @@
+source: arm.yaml
+port: /dev/ttyUSB0
+read_rate:  50
+write_rate: 50
+joints: {
+   Joint_1: {id: 1, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},
+   Joint_2: {id: 2, neutral: 512,max_angle: 20, min_angle: -20.0, max_speed: 90, type: dynamixel},
+   Joint_3: {id: 3,  neutral: 512,max_angle: 20, min_angle: -20.0, max_speed: 90, type: dynamixel},
+   Joint_4: {id: 4, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},
+   Joint_5: {id: 5, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},
+   Joint_6: {id: 6, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},
+   Joint_8: {id: 7, neutral: 512, max_angle: 145, min_angle: -145.0, max_speed: 90 , type: dynamixel},
+}
+
+controllers: {
+    arm_controller: {type: follow_controller, joints: [Joint_1,Joint_2, Joint_3,Joint_4, Joint_5, Joint_6], action_name: arm_controller/follow_joint_trajectory, onboard: False },
+    hand_controller: {type: follow_controller, joints: [Joint_8], action_name: hand_controller/follow_joint_trajectory, onboard: False }
+}
+
