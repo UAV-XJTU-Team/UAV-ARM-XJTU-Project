@@ -12,7 +12,7 @@ How to start:
     rosrun UAV-ARM-control space_to_move
     
    
--with visual control module:
+- with visual control module:
 
     catkin_make
     source devel/setup.bash
