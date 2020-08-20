@@ -1,4 +1,4 @@
-How to start:
+## How to start:
 
 - without visual control module:
 
@@ -8,7 +8,7 @@ How to start:
     
     rosrun UAV-ARM-control my_arm_control
 
-    then open a new terminal:
+ ###    then open a new terminal:
 
     source devel/setup.bash
     
