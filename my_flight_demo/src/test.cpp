@@ -6,13 +6,21 @@
 #include <geometry_msgs/Vector3Stamped.h>
 #include <sensor_msgs/Joy.h>
 #include "my_flight_demo/common.h"
+#include <std_srvs/SetBool.h>
+#include <my_flight_demo/pid.h>
+
 
 geometry_msgs::Vector3 current_velocity;
 geometry_msgs::Quaternion current_atti;
 
+ros::Publisher graspPub;
+
 Pid_control pid_x;
 Pid_control pid_y;
 Pid_control pid_z;
+
+bool do_grasp=false;
+bool has_grasped=false;
 
 std::vector<float> get_pid_vel(float x, float y, float z)
 {
@@ -23,9 +31,18 @@ std::vector<float> get_pid_vel(float x, float y, float z)
         vel.push_back(0);
         return vel;
     }
-    float v_x=pid_x.PID_realize(0,x);
-    float v_y=pid_y.PID_realize(0,y);
-    float v_z=pid_z.PID_realize(50,z);
+    bool x_ok=pid_x.PID_realize(0,x);  // return true if drone has approach the setpoint
+    bool y_ok=pid_y.PID_realize(0,y);
+    bool z_ok=pid_z.PID_realize(50,z);
+    if (x_ok&&y_ok&&z_ok){
+        do_grasp=true;
+    }
+    float v_x=pid_x.pid.OutPutVel;
+    float v_y=pid_y.pid.OutPutVel;
+    float v_z=pid_z.pid.OutPutVel;
+    boundle(v_x);
+    boundle(v_y);
+    boundle(v_z);
     std::vector<float> vel;
     vel.push_back(v_x);
     vel.push_back(v_y);
@@ -94,16 +111,35 @@ void visualbody_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
         std::cout << "vx: " << vx << " "
                   << "vy: " << vy << " "
                   << "vz: " << vz << std::endl;
+        // if(do_grasp==true)
+        // {
+            
+        // }
     }
 }
 
-
+bool do_move(std_srvs::SetBool::Request  &req,
+         std_srvs::SetBool::Response &res)
+{
+  if(req.data==true&&do_grasp==true)
+  {
+      res.success=true;
+      ROS_INFO("start grab");
+      return true;
+  }
+  else
+  {
+      return false;
+  }
+}
 
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "demo_flight_control_node");
     ros::NodeHandle nh;
+    ros::ServiceServer grasp_service = nh.advertiseService("move", do_move);
+    graspPub=nh.advertise<my_flight_demo::Visual_msg>("visual", 20);
     pid_x.PID_init(0.1,0.05,0.1,0,0);
     pid_y.PID_init(0.1,0.05,0.1,0,0);
     pid_z.PID_init(0.1,0.05,0.1,50,0);

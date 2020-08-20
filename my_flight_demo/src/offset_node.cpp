@@ -1,12 +1,14 @@
 #include "my_flight_demo/common.h"
 #include "my_flight_demo/pid.h"
+#include <std_srvs/SetBool.h>
+
 
 geometry_msgs::Vector3 current_velocity;
 geometry_msgs::Quaternion current_atti;
 geometry_msgs::Vector3 current_position;
 my_flight_demo::Visual_msg detect;
 
-ros::Publisher ctrlVelYawRatePub;
+ros::Publisher offsetPub;
 ros::ServiceClient drone_task_service;
 ros::ServiceClient sdk_ctrl_authority_service;
 ros::ServiceClient set_local_pos_reference;
@@ -14,6 +16,8 @@ ros::ServiceClient set_local_pos_reference;
 Pid_control pid_x;
 Pid_control pid_y;
 Pid_control pid_z;
+bool detected=false;
+bool do_grasp=false;
 
 std::vector<float> get_pid_vel(float x, float y, float z)
 {
@@ -78,88 +82,85 @@ void attitude_callback(const geometry_msgs::QuaternionStamped::ConstPtr &msg)
   current_atti = msg->quaternion;
 }
 
-// void visual_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
-// {
-//   int id = msg->id;
-//   geometry_msgs::Vector3 rvec = msg->rvec;
-//   geometry_msgs::Vector3 tvec = msg->tvec;
-//   float a = rvec.x;
-//   float b = rvec.y;
-//   float c = rvec.z;
-//   Eigen::Matrix3f R3 = Rodrigues(a, b, c); // marker frame to camera frame
-//   float x = current_atti.x;
-//   float y = current_atti.y;
-//   float z = current_atti.z;
-//   float w = current_atti.w;
-//   Eigen::Matrix3f R1 = QuaternionTomatrix(w, x, y, z); //body frame to ground frame
-//   Eigen::Matrix3f R2;                                  //camera frame to body frame
-//   R2 = eulerTomatrix(0, 0, 1.1415926 / 2);
-//   Eigen::Matrix3f R = R1 * R2 * R3;
-//   float tx = tvec.x;
-//   float ty = tvec.y;
-//   float tz = tvec.z;
-//   Eigen::Vector3f marker_frame_v = position_input(tx, ty, tz);
-//   Eigen::Vector3f V = R * marker_frame_v;
-//   float vx = V[0];
-//   float vy = V[1];
-//   float vz = V[2];
-//   std::cout << "vx: " << vx << " "
-//             << "vy: " << vy << " "
-//             << "vz: " << vz << std::endl;
-// }
-
-void visualbody_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
+void visual_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
 {
   int id = msg->id;
   geometry_msgs::Vector3 rvec = msg->rvec;
   geometry_msgs::Vector3 tvec = msg->tvec;
   if (id == 100)
   {
-    sensor_msgs::Joy controlVelYawRate;
+    sensor_msgs::Joy controloffset;
     uint8_t flag = (DJISDK::VERTICAL_VELOCITY |
                     DJISDK::HORIZONTAL_VELOCITY |
                     DJISDK::YAW_RATE |
                     DJISDK::HORIZONTAL_BODY |
                     DJISDK::STABLE_ENABLE);
-    controlVelYawRate.axes.push_back(0);
-    controlVelYawRate.axes.push_back(0);
-    controlVelYawRate.axes.push_back(0);
-    controlVelYawRate.axes.push_back(0);
-    controlVelYawRate.axes.push_back(flag);
+    controloffset.axes.push_back(0);
+    controloffset.axes.push_back(0);
+    controloffset.axes.push_back(0);
+    controloffset.axes.push_back(0);
+    controloffset.axes.push_back(flag);
     std::cout<<"0"<<std::endl;
-    ctrlVelYawRatePub.publish(controlVelYawRate);
+    offsetPub.publish(controloffset);
   }
   else
   {
     float tx = tvec.x;
     float ty = tvec.y;
     float tz = tvec.z;
-    std::vector<float> V= get_pid_vel(tx, ty, tz);
+    float delta_x=tz-50;
+    float delta_y=ty-0;
+    float delta_z=tx-0;
+    if(abs(delta_x)<0.1&&abs(delta_y)<0.1&&abs(delta_z)<0.1)
+    {
+        do_grasp=true;
+    }
+    // std::vector<float> V= get_pid_vel(tx, ty, tz);
 
-    sensor_msgs::Joy controlVelYawRate;
-    uint8_t flag = (DJISDK::VERTICAL_VELOCITY |
-                    DJISDK::HORIZONTAL_VELOCITY |
+    sensor_msgs::Joy controloffset;
+    uint8_t flag = (DJISDK::VERTICAL_POSITION |
+                    DJISDK::HORIZONTAL_POSITION |
                     DJISDK::YAW_RATE |
                     DJISDK::HORIZONTAL_BODY |
                     DJISDK::STABLE_ENABLE);
-    controlVelYawRate.axes.push_back(V[0]);
-    controlVelYawRate.axes.push_back(V[1]);
-    controlVelYawRate.axes.push_back(V[2]);
-    controlVelYawRate.axes.push_back(0);
-    controlVelYawRate.axes.push_back(flag);
-    std::cout<<V[0]<<" "<<V[1]<<" "<<V[2]<<std::endl;
-    ctrlVelYawRatePub.publish(controlVelYawRate);
+    controloffset.axes.push_back(delta_x);
+    controloffset.axes.push_back(delta_y);
+    controloffset.axes.push_back(delta_z);
+    controloffset.axes.push_back(0);
+    controloffset.axes.push_back(flag);
+    std::cout<<delta_x<<" "<<delta_y<<" "<<delta_z<<std::endl;
+    if(!detected)
+    {
+        offsetPub.publish(controloffset);
+        detected=true;
+    }
+  }
+}
+
+bool do_move(std_srvs::SetBool::Request  &req,
+         std_srvs::SetBool::Response &res)
+{
+  if(req.data==true&&do_grasp==true)
+  {
+      res.success=true;
+      ROS_INFO("start grab");
+      return true;
+  }
+  else
+  {
+      return false;
   }
 }
 
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "demo_flight_control_node");
+  ros::init(argc, argv, "demo_offset_node");
   ros::NodeHandle nh;
+  ros::ServiceServer grasp_service = nh.advertiseService("move", do_move);
   drone_task_service = nh.serviceClient<dji_sdk::DroneTaskControl>("dji_sdk/drone_task_control");
   sdk_ctrl_authority_service = nh.serviceClient<dji_sdk::SDKControlAuthority> ("dji_sdk/sdk_control_authority");
-  ctrlVelYawRatePub = nh.advertise<sensor_msgs::Joy>("dji_sdk/flight_control_setpoint_generic", 10);
+  offsetPub = nh.advertise<sensor_msgs::Joy>("dji_sdk/flight_control_setpoint_generic", 1);
   ros::Subscriber attitudeSub = nh.subscribe("dji_sdk/attitude", 10, &attitude_callback);
   bool obtain_control_result = obtain_control();
   if (takeoff_land(dji_sdk::DroneTaskControl::Request::TASK_TAKEOFF))
@@ -175,7 +176,7 @@ int main(int argc, char **argv)
   pid_x.PID_init(0.1,0.05,0.1,0,0);
   pid_y.PID_init(0.1,0.05,0.1,0,0);
   pid_z.PID_init(0.1,0.05,0.1,50,0);
-  ros::Subscriber visualSub = nh.subscribe("visual", 10, &visualbody_callback);
+  ros::Subscriber visualSub = nh.subscribe("visual", 10, &visual_callback);
   ros::spin();
   return 0;
 }

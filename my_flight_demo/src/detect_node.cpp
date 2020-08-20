@@ -1,22 +1,15 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
-#include <eigen3/Eigen/Dense>
-#include <math.h>
-#include "dji_sdk/dji_sdk.h"
-#include <math.h>
-#include <my_flight_demo/Visual_msg.h>
-#include <eigen3/Eigen/Dense>
-#include <geometry_msgs/QuaternionStamped.h>
-#include <geometry_msgs/Vector3Stamped.h>
-#include <sensor_msgs/Joy.h>
 #include "my_flight_demo/common.h"
 
-#define DebugP(x) std::cout << "Line" << __LINE__ << "  " << #x << "=" << x << std::endl
+// #define DebugP(x) std::cout << "Line" << __LINE__ << "  " << #x << "=" << x << std::endl
 
 void readCameraParameters(cv::Mat &cameraMatrix,cv::Mat &distCoeffs)
 {
-    cameraMatrix=(cv::Mat_<float>(3,3)<<720.2120,2.0761,335.1827,0,721.1528,268.9376,0,0,1);
-    distCoeffs=(cv::Mat_<float>(4,1)<<-0.1622,0.1400,0.00234976,-0.0008216553);
+    cameraMatrix=(cv::Mat_<float>(3,3)<<584.3794882626619,  0,  670.0923167439549,
+                                        0,                  583.6226984491009,   324.7123073166937,
+                                        0,0,1);
+    distCoeffs=(cv::Mat_<float>(4,1)<<-0.0042,-0.0117,1,3792e-04,0.0036);
 }
 
 void CodeRotateByZ(float x, float y, float thetaz, float &outx, float &outy)
@@ -45,6 +38,8 @@ void CodeRotateByX(float y, float z, float thetax, float &outy, float &outz)
   outz = cos(rx) * z1 + sin(rx) * y1;
 }
 
+
+// transform body frame to marker frame
 std::vector<float> transform(cv::Vec3d &rvec,cv::Vec3d &tvec)
 {
   // DebugP(rvec[0]);
@@ -90,9 +85,9 @@ std::vector<float> transform(cv::Vec3d &rvec,cv::Vec3d &tvec)
     x=x*-1;
     y=y*-1;
     z=z*-1;
-    DebugP(x);
-    DebugP(y);
-    DebugP(z);
+    // DebugP(x);
+    // DebugP(y);
+    // DebugP(z);
     std::vector<float> position;
     position.push_back(x);
     position.push_back(y);
@@ -111,11 +106,15 @@ int main(int argc, char **argv)
   detectPub = nh.advertise<my_flight_demo::Visual_msg>("visual", 20);
   cv::VideoCapture inputVideo;
   inputVideo.open(1);
-  
+  // inputVideo.set(6,cv::VideoWriter::fourcc('M','J','P','G'));
+  // inputVideo.set(5,100);
+  inputVideo.set(3,640);
+  inputVideo.set(4,480);
   cv::Mat cameraMatrix, distCoeffs;
   // camera parameters are read from somewhere
   readCameraParameters(cameraMatrix, distCoeffs);
   cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+  ros::Rate loop_rate(10);
   while (inputVideo.grab()) {
       cv::Mat image, imageCopy;
       inputVideo.retrieve(image);
@@ -146,6 +145,8 @@ int main(int argc, char **argv)
               msg.tvec=tvec;
               msg.rvec=rvec;
               detectPub.publish(msg);
+              ros::spinOnce();
+              loop_rate.sleep();
           }
       }
       else{
@@ -162,6 +163,8 @@ int main(int argc, char **argv)
         msg.tvec=tvec;
         msg.rvec=rvec;
         detectPub.publish(msg);
+        ros::spinOnce();
+        loop_rate.sleep();
       }
       cv::imshow("out", imageCopy);
       char key = (char) cv::waitKey(1);

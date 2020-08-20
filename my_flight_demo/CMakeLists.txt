@@ -166,6 +166,17 @@ target_link_libraries(detect_node
         )
 add_dependencies(detect_node dji_sdk_generate_messages_cpp)
 
+############
+add_executable(offset_node
+        src/offset_node.cpp)
+
+target_link_libraries(offset_node
+        ${catkin_LIBRARIES}
+        ${DJIOSDK_LIBRARIES}
+        ${OpenCV_LIBS}
+        )
+add_dependencies(offset_node dji_sdk_generate_messages_cpp)
+
 
 
 ## Declare a C++ library
