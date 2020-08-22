@@ -109,12 +109,12 @@ Eigen::Vector3f position_input(float x, float y, float z)
     // posctrlVYawRatePub.publish(controlVelYawRate);
 }
 
-void boundle(float &v)
+void boundle(float &v,float bound)
 {
-    if(v>0.5)
-        v=0.5;
-    if(v<-0.5)
-        v=-0.5;
+    if(v>bound)
+        v=bound;
+    if(v<-bound)
+        v=-bound;
 }
 
 

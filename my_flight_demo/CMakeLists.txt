@@ -177,6 +177,17 @@ target_link_libraries(offset_node
         )
 add_dependencies(offset_node dji_sdk_generate_messages_cpp)
 
+############
+add_executable(fixed_height_test
+        src/fixed_height_test.cpp)
+
+target_link_libraries(fixed_height_test
+        ${catkin_LIBRARIES}
+        ${DJIOSDK_LIBRARIES}
+        ${OpenCV_LIBS}
+        )
+add_dependencies(fixed_height_test dji_sdk_generate_messages_cpp)
+
 
 
 ## Declare a C++ library

@@ -1,5 +1,6 @@
 #include "my_flight_demo/common.h"
 #include "my_flight_demo/pid.h"
+#include <std_srvs/SetBool.h>
 
 geometry_msgs::Vector3 current_velocity;
 geometry_msgs::Quaternion current_atti;
@@ -11,9 +12,12 @@ ros::ServiceClient drone_task_service;
 ros::ServiceClient sdk_ctrl_authority_service;
 ros::ServiceClient set_local_pos_reference;
 
+bool do_grasp=false;
+
 Pid_control pid_x;
 Pid_control pid_y;
 Pid_control pid_z;
+
 
 std::vector<float> get_pid_vel(float x, float y, float z)
 {
@@ -26,11 +30,15 @@ std::vector<float> get_pid_vel(float x, float y, float z)
     }
     float v_x=pid_x.PID_realize(0,x);
     float v_y=pid_y.PID_realize(0,y);
-    float v_z=pid_z.PID_realize(50,z);
+    float v_z=pid_z.PID_realize(0.5,z);
+    float v_body_x=-v_z;
+    float v_body_y=-v_y;
+    float v_body_z=-v_x;
+
     std::vector<float> vel;
-    vel.push_back(v_x);
-    vel.push_back(v_y);
-    vel.push_back(v_z);
+    vel.push_back(v_body_x);
+    vel.push_back(v_body_y);
+    vel.push_back(v_body_z);
     return vel;
 }
 
@@ -126,7 +134,7 @@ void visualbody_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
     controlVelYawRate.axes.push_back(0);
     controlVelYawRate.axes.push_back(0);
     controlVelYawRate.axes.push_back(flag);
-    std::cout<<"0"<<std::endl;
+    std::cout<<"wait to detect"<<std::endl;
     ctrlVelYawRatePub.publish(controlVelYawRate);
   }
   else
@@ -134,24 +142,62 @@ void visualbody_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
     float tx = tvec.x;
     float ty = tvec.y;
     float tz = tvec.z;
-    std::vector<float> V= get_pid_vel(tx, ty, tz);
 
-    sensor_msgs::Joy controlVelYawRate;
-    uint8_t flag = (DJISDK::VERTICAL_VELOCITY |
-                    DJISDK::HORIZONTAL_VELOCITY |
-                    DJISDK::YAW_RATE |
-                    DJISDK::HORIZONTAL_BODY |
-                    DJISDK::STABLE_ENABLE);
-    controlVelYawRate.axes.push_back(V[0]);
-    controlVelYawRate.axes.push_back(V[1]);
-    controlVelYawRate.axes.push_back(V[2]);
-    controlVelYawRate.axes.push_back(0);
-    controlVelYawRate.axes.push_back(flag);
-    std::cout<<V[0]<<" "<<V[1]<<" "<<V[2]<<std::endl;
-    ctrlVelYawRatePub.publish(controlVelYawRate);
+    float delta_y=abs(ty);
+    float delta_z=abs(tz-1);
+    if(delta_y<0.1&&delta_z<0.1)
+    {
+      do_grasp=true;
+      sensor_msgs::Joy controlVelYawRate;
+      uint8_t flag = (DJISDK::VERTICAL_VELOCITY |
+                      DJISDK::HORIZONTAL_VELOCITY |
+                      DJISDK::YAW_RATE |
+                      DJISDK::HORIZONTAL_BODY |
+                      DJISDK::STABLE_ENABLE);
+      controlVelYawRate.axes.push_back(0);
+      controlVelYawRate.axes.push_back(0);
+      controlVelYawRate.axes.push_back(0);
+      controlVelYawRate.axes.push_back(0);
+      controlVelYawRate.axes.push_back(flag);
+      std::cout<<"hover! wait to grab"<<std::endl;
+      ctrlVelYawRatePub.publish(controlVelYawRate);
+    }
+    else
+    {
+      std::vector<float> V= get_pid_vel(tx, ty, tz);
+
+      sensor_msgs::Joy controlVelYawRate;
+      uint8_t flag = (DJISDK::VERTICAL_POSITION |
+                      DJISDK::HORIZONTAL_VELOCITY |
+                      DJISDK::YAW_RATE |
+                      DJISDK::HORIZONTAL_BODY |
+                      DJISDK::STABLE_ENABLE);
+      controlVelYawRate.axes.push_back(V[0]);
+      controlVelYawRate.axes.push_back(V[1]);
+      controlVelYawRate.axes.push_back(2);
+      controlVelYawRate.axes.push_back(0);
+      controlVelYawRate.axes.push_back(flag);
+      std::cout<<"approach setpoint"<<std::endl;
+      std::cout<<V[0]<<" "<<V[1]<<std::endl;
+      ctrlVelYawRatePub.publish(controlVelYawRate);
+    }
   }
 }
 
+bool do_move(std_srvs::SetBool::Request  &req,
+         std_srvs::SetBool::Response &res)
+{
+  if(req.data==true&&do_grasp==true)
+  {
+      res.success=true;
+      ROS_INFO("start grab");
+      return true;
+  }
+  else
+  {
+      return false;
+  }
+}
 
 int main(int argc, char **argv)
 {
@@ -170,12 +216,13 @@ int main(int argc, char **argv)
   {
     ROS_INFO("takeoff failed");
   }
-  ros::Duration(0.01).sleep();
+  ros::Duration(5).sleep();
   ros::spinOnce();
   pid_x.PID_init(0.1,0.05,0.1,0,0);
   pid_y.PID_init(0.1,0.05,0.1,0,0);
-  pid_z.PID_init(0.1,0.05,0.1,50,0);
+  pid_z.PID_init(0.1,0.05,0.1,0.5,0);
   ros::Subscriber visualSub = nh.subscribe("visual", 10, &visualbody_callback);
+  ros::ServiceServer grasp_service = nh.advertiseService("move", do_move);
   ros::spin();
   return 0;
 }

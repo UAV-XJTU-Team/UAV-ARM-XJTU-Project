@@ -100,7 +100,7 @@ void visual_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
     controloffset.axes.push_back(0);
     controloffset.axes.push_back(0);
     controloffset.axes.push_back(flag);
-    std::cout<<"0"<<std::endl;
+    std::cout<<"wait to detect"<<std::endl;
     offsetPub.publish(controloffset);
   }
   else
@@ -108,32 +108,50 @@ void visual_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
     float tx = tvec.x;
     float ty = tvec.y;
     float tz = tvec.z;
-    float delta_x=tz-50;
+    float delta_x=tz-0.5;
     float delta_y=ty-0;
-    float delta_z=tx-0;
-    if(abs(delta_x)<0.1&&abs(delta_y)<0.1&&abs(delta_z)<0.1)
+    if(abs(delta_x)<0.1&&abs(delta_y)<0.1)
     {
         do_grasp=true;
+        sensor_msgs::Joy hover;
+
+        uint8_t flag = (DJISDK::VERTICAL_VELOCITY |
+                        DJISDK::HORIZONTAL_VELOCITY |
+                        DJISDK::YAW_RATE |
+                        DJISDK::HORIZONTAL_BODY |
+                        DJISDK::STABLE_ENABLE);
+        hover.axes.push_back(0);
+        hover.axes.push_back(0);
+        hover.axes.push_back(0);
+        hover.axes.push_back(0);
+        hover.axes.push_back(flag);
+        std::cout<<"hover! prepare to grab"<<std::endl;
+        offsetPub.publish(hover);
+
     }
     // std::vector<float> V= get_pid_vel(tx, ty, tz);
-
-    sensor_msgs::Joy controloffset;
-    uint8_t flag = (DJISDK::VERTICAL_POSITION |
-                    DJISDK::HORIZONTAL_POSITION |
-                    DJISDK::YAW_RATE |
-                    DJISDK::HORIZONTAL_BODY |
-                    DJISDK::STABLE_ENABLE);
-    controloffset.axes.push_back(delta_x);
-    controloffset.axes.push_back(delta_y);
-    controloffset.axes.push_back(delta_z);
-    controloffset.axes.push_back(0);
-    controloffset.axes.push_back(flag);
-    std::cout<<delta_x<<" "<<delta_y<<" "<<delta_z<<std::endl;
-    if(!detected)
+    else
     {
-        offsetPub.publish(controloffset);
-        detected=true;
+      sensor_msgs::Joy controloffset;
+      uint8_t flag = (DJISDK::VERTICAL_POSITION |   //fixed height
+                      DJISDK::HORIZONTAL_VELOCITY | //control horizontal vel
+                      DJISDK::YAW_RATE |
+                      DJISDK::HORIZONTAL_BODY |
+                      DJISDK::STABLE_ENABLE);
+      controloffset.axes.push_back(10);
+      controloffset.axes.push_back(10);
+      controloffset.axes.push_back(6);
+      controloffset.axes.push_back(0);
+      controloffset.axes.push_back(flag);
+      std::cout<<delta_x<<" "<<delta_y<<std::endl;
+      offsetPub.publish(controloffset);
     }
+    
+    // if(!detected)
+    // {
+    //     offsetPub.publish(controloffset);
+    //     detected=true;
+    // }
   }
 }
 

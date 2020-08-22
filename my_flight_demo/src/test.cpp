@@ -40,9 +40,9 @@ std::vector<float> get_pid_vel(float x, float y, float z)
     float v_x=pid_x.pid.OutPutVel;
     float v_y=pid_y.pid.OutPutVel;
     float v_z=pid_z.pid.OutPutVel;
-    boundle(v_x);
-    boundle(v_y);
-    boundle(v_z);
+    boundle(v_x,0.2);
+    boundle(v_y,0.2);
+    boundle(v_z,0.2);
     std::vector<float> vel;
     vel.push_back(v_x);
     vel.push_back(v_y);
@@ -139,7 +139,6 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "demo_flight_control_node");
     ros::NodeHandle nh;
     ros::ServiceServer grasp_service = nh.advertiseService("move", do_move);
-    graspPub=nh.advertise<my_flight_demo::Visual_msg>("visual", 20);
     pid_x.PID_init(0.1,0.05,0.1,0,0);
     pid_y.PID_init(0.1,0.05,0.1,0,0);
     pid_z.PID_init(0.1,0.05,0.1,50,0);
