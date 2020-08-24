@@ -4,6 +4,8 @@
 #include <std_srvs/SetBool.h>
 #include <my_flight_demo/pid.h>
 
+const float distance = 1; //decide the distance between camera and marker along camera's z axis(the face),unit is meter
+
 
 geometry_msgs::Vector3 current_velocity;
 geometry_msgs::Quaternion current_atti;
@@ -76,9 +78,9 @@ std::vector<float> get_pid_vel(float x, float y, float z)
         vel.push_back(0);
         return vel;
     }
-    bool x_ok=pid_x.PID_realize(0,x);  // return true if drone has approach the setpoint by erro=+-0.1m
-    bool y_ok=pid_y.PID_realize(0,y);
-    bool z_ok=pid_z.PID_realize(1,z);
+    bool x_ok=pid_x.PID_realize(0,x,0.1);  // return true if drone has approach the setpoint by erro=+-0.1m
+    bool y_ok=pid_y.PID_realize(0,y,0.1);
+    bool z_ok=pid_z.PID_realize(1,z,0.1);
     if (y_ok&&z_ok){ // only flight in y-z plane of marker frame;
         do_grasp=true;
     }
@@ -100,7 +102,7 @@ void visualbody_callback(const my_flight_demo::Visual_msg::ConstPtr &msg)
 {
     if(has_grasped)
     {
-        takeoff_land(1);
+        takeoff_land(6);
     }
     else
     {
@@ -228,7 +230,7 @@ int main(int argc, char **argv)
     ros::spinOnce();
     pid_x.PID_init(0.1,0.05,0.1,0,0);
     pid_y.PID_init(0.1,0.05,0.1,0,0);
-    pid_z.PID_init(0.1,0.05,0.1,0.2,0);
+    pid_z.PID_init(0.1,0.05,0.1,0.7,0);
     ros::ServiceServer grasp_service = nh.advertiseService("move", do_move);
     ros::Subscriber visualSub = nh.subscribe("visual", 10, &visualbody_callback);
     ros::spin();

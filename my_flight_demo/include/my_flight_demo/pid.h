@@ -15,7 +15,7 @@ class Pid_control
 {
 public:
 void PID_init(float kp,float ki,float kd,float SetPoint,float ActualPoint);
-bool PID_realize(float point,float ActualPoint);
+bool PID_realize(float point,float ActualPoint,float erro_threshold);
 int index;
 Pid pid;
 };
@@ -34,11 +34,11 @@ pid.Ki = ki;
 pid.Kd = kd;
 }
  
-bool Pid_control::PID_realize(float point,float ActualPoint){
+bool Pid_control::PID_realize(float point,float ActualPoint,float erro_threshold){
 pid.SetPoint = point;
 pid.ActualPoint=ActualPoint;
 pid.err = pid.SetPoint - pid.ActualPoint;
-if (abs(pid.err)<0.1)
+if (abs(pid.err)<erro_threshold)
 {
     pid.err_last = pid.err_next;
     pid.err_next = pid.err;

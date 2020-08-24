@@ -132,26 +132,16 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
-############
-add_executable(my_flight_demo
-        src/velocity_node.cpp)
-
-target_link_libraries(my_flight_demo
-        ${catkin_LIBRARIES}
-        ${DJIOSDK_LIBRARIES}
-        )
-add_dependencies(my_flight_demo dji_sdk_generate_messages_cpp)
-
 
 ###############
-add_executable(my_test
-        src/test.cpp)
+add_executable(print_test
+        src/print_test.cpp)
 
-target_link_libraries(my_test
+target_link_libraries(print_test
         ${catkin_LIBRARIES}
         ${DJIOSDK_LIBRARIES}
         )
-add_dependencies(my_test dji_sdk_generate_messages_cpp)
+add_dependencies(print_test dji_sdk_generate_messages_cpp)
 
 
 
@@ -165,17 +155,6 @@ target_link_libraries(detect_node
         ${OpenCV_LIBS}
         )
 add_dependencies(detect_node dji_sdk_generate_messages_cpp)
-
-############
-add_executable(offset_node
-        src/offset_node.cpp)
-
-target_link_libraries(offset_node
-        ${catkin_LIBRARIES}
-        ${DJIOSDK_LIBRARIES}
-        ${OpenCV_LIBS}
-        )
-add_dependencies(offset_node dji_sdk_generate_messages_cpp)
 
 ############
 add_executable(fixed_height_test
