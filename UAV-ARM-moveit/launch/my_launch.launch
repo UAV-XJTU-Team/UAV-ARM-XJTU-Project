@@ -1,0 +1,40 @@
+<launch>
+   <!-- we do not have a simulation  by default  -->
+   <!-- specify the planning pipeline -->
+  <arg name="pipeline" default="ompl" />
+  <!-- By default, we have a visualize interface -->
+  <arg name="visualize" default="true"/>
+  
+  <!-- By default, we are not in debug mode -->
+  <arg name="debug" default="false" />
+  <arg name="use_gui" default="true"/>
+  <include file="$(find UAV-ARM-moveit)/moveit/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <!-- Run the main MoveIt! -->
+  <include file="$(find UAV-ARM-moveit)/moveit/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="fake_execution" value="false"/>
+    <arg name="info" value="true"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="pipeline" value="$(arg pipeline)"/>
+  </include>
+  
+    <!-- Run joint_state_publisher And robot_state_publisher   -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="$(arg use_gui)"/> 
+  </node>
+
+    <!-- Run arbotix controller -->
+  <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen">
+    <rosparam file="$(find UAV-ARM-moveit)/config/arm.yaml" command="load"/>
+    <param name="sim" value="false"/>
+  </node>
+<!-- Run Rviz -->
+<include file="$(find UAV-ARM-moveit)/rviz/moveit_rviz.launch"  if="$(arg visualize)">
+    <arg name="rviz_config" value="$(find  UAV-ARM-moveit)/rviz/moveit.rviz"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+</launch>
