@@ -167,6 +167,28 @@ target_link_libraries(fixed_height_test
         )
 add_dependencies(fixed_height_test dji_sdk_generate_messages_cpp)
 
+###############
+add_executable(hover
+        src/hover.cpp)
+
+target_link_libraries(hover
+        ${catkin_LIBRARIES}
+        ${DJIOSDK_LIBRARIES}
+        ${OpenCV_LIBS}
+        )
+add_dependencies(hover dji_sdk_generate_messages_cpp)
+
+
+###############
+add_executable(keyboard_control
+        src/keyboard_control.cpp)
+
+target_link_libraries(keyboard_control
+        ${catkin_LIBRARIES}
+        ${DJIOSDK_LIBRARIES}
+        ${OpenCV_LIBS}
+        )
+add_dependencies(keyboard_control dji_sdk_generate_messages_cpp)
 
 
 ## Declare a C++ library
@@ -210,6 +232,8 @@ add_dependencies(fixed_height_test dji_sdk_generate_messages_cpp)
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/visual_node.py
+  scripts/keyboard.py
+  scripts/key_test.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

@@ -41,3 +41,13 @@ add_executable(space_to_move src/space_to_move.cpp)
 target_link_libraries(space_to_move
   ${catkin_LIBRARIES}  
 )
+add_executable(control_in_set_mode src/control_in_set_mode.cpp)
+target_link_libraries(control_in_set_mode
+  ${catkin_LIBRARIES}  
+)
+
+catkin_install_python(PROGRAMS
+  scripts/moveit_ik_demo.py
+  scripts/cycle_control.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

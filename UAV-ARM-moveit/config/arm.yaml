@@ -1,11 +1,11 @@
 source: arm.yaml
-port: /dev/ttyUSB0
+port: /dev/ttyUSB1
 read_rate:  50
 write_rate: 50
 joints: {
    Joint_1: {id: 1, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},
-   Joint_2: {id: 2, neutral: 512,max_angle: 20, min_angle: -20.0, max_speed: 90, type: dynamixel},
-   Joint_3: {id: 3,  neutral: 512,max_angle: 20, min_angle: -20.0, max_speed: 90, type: dynamixel},
+   Joint_2: {id: 2, neutral: 512,max_angle: 180, min_angle: -180.0, max_speed: 90, type: dynamixel},
+   Joint_3: {id: 3, neutral: 512,max_angle: 180, min_angle: -180.0, max_speed: 90, type: dynamixel},
    Joint_4: {id: 4, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},
    Joint_5: {id: 5, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},
    Joint_6: {id: 6, neutral: 512, max_angle: 360, min_angle: -360.0, max_speed: 90, type: dynamixel},

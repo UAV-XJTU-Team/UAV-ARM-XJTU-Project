@@ -218,6 +218,11 @@ int main(int argc, char **argv)
     ros::Subscriber attitudeSub = nh.subscribe("dji_sdk/attitude", 10, &attitude_callback);
     bool obtain_control_result = obtain_control();
     // start takeoff
+    if (!set_local_position()) // We need this for height
+    {
+        ROS_ERROR("GPS health insufficient - No local frame reference for height. Exiting.");
+        return 1;
+    }
     if (takeoff_land(dji_sdk::DroneTaskControl::Request::TASK_TAKEOFF))
     {
         ROS_INFO("start takeoff");
