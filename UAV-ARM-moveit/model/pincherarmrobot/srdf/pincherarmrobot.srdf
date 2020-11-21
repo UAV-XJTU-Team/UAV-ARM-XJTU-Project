@@ -34,18 +34,18 @@
     <group_state name="catch_forward" group="arm">
         <joint name="Joint_1" value="0" />
         <joint name="Joint_2" value="0" />
-        <joint name="Joint_3" value="-0.7" />
-        <joint name="Joint_4" value="-0.7" />
+        <joint name="Joint_3" value="-0.8" />
+        <joint name="Joint_4" value="-0.8" />
         <joint name="Joint_5" value="0" />
-        <joint name="Joint_6" value="0.3" />
+        <joint name="Joint_6" value="-0.3" />
     </group_state>
     <group_state name="catch_backward" group="arm">
         <joint name="Joint_1" value="0" />
         <joint name="Joint_2" value="0" />
-        <joint name="Joint_3" value="0.7" />
-        <joint name="Joint_4" value="0.7" />
+        <joint name="Joint_3" value="0.8" />
+        <joint name="Joint_4" value="0.8" />
         <joint name="Joint_5" value="0" />
-        <joint name="Joint_6" value="-0.3" />
+        <joint name="Joint_6" value="0.3" />
     </group_state>
     <group_state name="open" group="hand">
         <!-- max: 0.9 ,min: -1.6-->

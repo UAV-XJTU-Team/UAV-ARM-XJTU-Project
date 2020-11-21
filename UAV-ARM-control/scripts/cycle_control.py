@@ -6,9 +6,6 @@ import sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 
-
-
-
  
 def test_move():
     # 初始化move_group的API
@@ -43,7 +40,6 @@ def test_move():
         arm.set_named_target('reset')
         arm.go()
         rospy.sleep(1)
-                
         # 设置机械臂工作空间中的目标位姿，位置使用x、y、z坐标描述，
         # 姿态使用四元数描述，基于base_link坐标系
         target_pose = PoseStamped()

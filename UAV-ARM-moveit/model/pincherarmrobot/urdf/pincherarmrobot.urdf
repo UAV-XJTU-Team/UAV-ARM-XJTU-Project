@@ -1,5 +1,7 @@
 <robot
   name="pincherarmrobot">
+  <link name="world">
+    </link>
   <link
     name="base_link">
     <inertial>
@@ -40,6 +42,10 @@
       </geometry>
     </collision>
   </link>
+  <joint name="virtual_joint" type="fixed">
+     <parent link="world"/>
+     <child link="base_link"/>
+   </joint>
   <link
     name="Link_1">
     <inertial>
